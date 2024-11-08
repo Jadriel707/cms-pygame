@@ -1,16 +1,16 @@
 # Example file showing a basic pygame "game loop"
 import pygame
-
+import random
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1000, 800))
 clock = pygame.time.Clock()
 running = True
 
-PURPLE=pygame.Color(150,30,245)
-BLACK= pygame.Color(0,0,0)
-GREEN= pygame.Color(0,255,0)
-YELLOW= pygame.Color(255,255,0)
+PURPLE = pygame.Color(150,30,245)
+BLACK = pygame.Color(0,0,0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+GREEN = pygame.Color(0,255,0)
+YELLOW = pygame.Color(255,255,0)
 
 
 
@@ -85,14 +85,59 @@ class Player:
         screen.blit(self.image, (rect.x, rect.y))
 
 class Enemy:
-    def __init__(self,x,y,size):
+    boxes=[]
+    def __init__(self,x,y,size, image):
         self.x=x
         self.y=y
         self.size=size
+        self.waitTime=50
+        self.image=pygame.image.load(image)
+        self.image=pygame.transform.scale(self.image, (self.size, self.size))
+
+    def attack(self):
+        boxes=[]
+        start=["LEFT", "UP", "RIGHT", "DOWN"]
+        if self.waitTime>0:
+            self.waitTime-=1
+            return
+        else:
+            self.waitTime=50
+        
+        num=random.randint(1,4)
+        if num==1:
+            print(num)
+        if num==2:
+            print(num)
+        if num==3:
+            print(num)
+        if num==4:
+            print(num)
+    
+    def draw(self, screen):
+        screen.blit(self.image, (self.x, self.y))
+
+    
+            
+
+class Box:
+    def __init__(self, x, y):
+        self.damage=5
+
+    def go_up(self):
+    def go_down(self):
+    def go_left(self):
+    def go_right(self):
+
+    
+    
+
+enemy = Enemy(300,400,200,"assets/EnemyBox4.png")   
+    
+
 
 player1= Player(pygame.Rect(100,100,25,25), "assets/blueSOUL.png", 4)
 player2= Player(pygame.Rect(400,100,25,25), "assets/redSOUL.png", 4)
-allThings.append(pygame.Rect(200,400,25,25))
+allThings.append(pygame.Rect(300,200,100,100))
 
 while running:
     # poll for events
@@ -104,19 +149,16 @@ while running:
     # UPDATE
     player1.move2()
     player2.move()
-    allThings[2].y+=10
-    if allThings[2].y>800:
-        allThings[2].y=-25
-
+    enemy.attack()
     
-            
-
     # DRAW
     screen.fill(BLACK)
 
     pygame.draw.rect(screen, GREEN, allThings[2])
     player1.draw(screen)
     player2.draw(screen)
+    enemy.draw(screen)
+    
     
     
 
