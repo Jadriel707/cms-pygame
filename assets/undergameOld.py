@@ -14,7 +14,7 @@ YELLOW= pygame.Color(255,255,0)
 
 
 
-allThings = []
+
 
 class Player:
     def __init__(self, rectangle, image, speed):
@@ -84,13 +84,14 @@ class Player:
         pygame.draw.rect(screen, color, rect)
         screen.blit(self.image, (rect.x, rect.y))
 
-class Enemy:
-    def __init__(self):
-        pass
+
+allThings = []
 
 player1= Player(pygame.Rect(100,100,50,50), "assets/blueSOUL.png", 4)
 player2= Player(pygame.Rect(400,100,50,50), "assets/redSOUL.png", 4)
-allThings.append(pygame.Rect(200,400,100,100))
+test_rectangle=pygame.Rect(200,400,100,100)
+
+allThings.append(test_rectangle)
 
 while running:
     # poll for events
@@ -109,7 +110,7 @@ while running:
     # DRAW
     screen.fill(BLACK)
 
-    pygame.draw.rect(screen, GREEN, allThings[2])
+    pygame.draw.rect(screen, GREEN, test_rectangle)
     player1.draw(screen)
     player2.draw(screen)
     
