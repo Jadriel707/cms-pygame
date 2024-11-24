@@ -133,13 +133,14 @@ class Player:
         box.remove()
 
     def draw(self, screen):
-        rect=self.rectangle
-        if self.colliding:
-            color=YELLOW
-        else:
-            color=PURPLE
-        # pygame.draw.rect(screen, color, rect)
-        screen.blit(self.image, (rect.x, rect.y))
+        if not self.dead:
+            rect=self.rectangle
+            if self.colliding:
+                color=YELLOW
+            else:
+                color=PURPLE
+            # pygame.draw.rect(screen, color, rect)
+            screen.blit(self.image, (rect.x, rect.y))
 
 class Enemy:
     boxes=[]
@@ -147,7 +148,7 @@ class Enemy:
         self.x=x
         self.y=y
         self.size=size
-        self.frequency=12
+        self.frequency=36
         self.waitTime=self.frequency
         self.image=pygame.image.load(image)
         self.image=pygame.transform.scale(self.image, (self.size, self.size))
@@ -200,9 +201,9 @@ class Box:
             self.y=random.randint(box.y, box.y+box.height)
 
         self.damage=5
-        self.speed=7
+        self.speed=4
 
-        self.rectangle=pygame.Rect(self.x, self.y, 20, 20)
+        self.rectangle=pygame.Rect(self.x, self.y, 50, 50)
 
     def spawn_top(self):
         self.y=-50
