@@ -17,35 +17,10 @@ YELLOW = pygame.Color(255,255,0)
 WHITE = pygame.Color(255,255,255)
 
 
-class Screen:
-    pass
-
-
-
-class Game(Screen):
-    allThings = []
-    player_box=pygame.Rect(WIDTH/2-350/2, 300, 350, 350)
-
-    def draw_box(screen):
-        box=Game.player_box
-        point=4
-        pygame.draw.line(screen, WHITE, (box.x, box.y), (box.x+box.width, box.y), point)
-        pygame.draw.line(screen, WHITE, (box.x+box.width, box.y), (box.x+box.width, box.y+box.height), point)
-        pygame.draw.line(screen, WHITE, (box.x+box.width, box.y+box.height), (box.x, box.y+box.height), point)
-        pygame.draw.line(screen, WHITE, (box.x, box.y+box.height), (box.x, box.y), point)
-
-    def draw_health(screen, p1, p2):
-        pygame.draw.rect(screen, RED, (20,10,50,20))
-        if not p1.dead:
-            pygame.draw.rect(screen, GREEN, (20,10,p1.health,20))
-
-        pygame.draw.rect(screen, RED, (930,10,50,20))
-        if not p2.dead:
-            pygame.draw.rect(screen, GREEN, (930,10,p2.health,20))
-
 class Player:
-    def __init__(self, rectangle, image, speed):
-        Game.allThings.append(rectangle)
+    def __init__(self, rectangle, image, speed, game):
+        self.game=game
+        game.allThings.append(rectangle)
         self.rectangle=rectangle
         self.image=pygame.image.load(image)
         self.image=pygame.transform.scale(self.image, (rectangle.width, rectangle.height))
@@ -62,19 +37,19 @@ class Player:
             
 
     def move_left(self):
-        player_box=Game.player_box
+        player_box=self.game.player_box
         if self.rectangle.x>player_box.x:
             self.rectangle.x-=self.speed
     def move_right(self):
-        player_box=Game.player_box
+        player_box=self.game.player_box
         if self.rectangle.x<player_box.x+player_box.width-self.rectangle.width:
             self.rectangle.x+=self.speed
     def move_up(self):
-        player_box=Game.player_box
+        player_box=self.game.player_box
         if self.rectangle.y>player_box.y:
             self.rectangle.y-=self.speed
     def move_down(self):
-        player_box=Game.player_box
+        player_box=self.game.player_box
         if self.rectangle.y<player_box.y+player_box.height-self.rectangle.width:
             self.rectangle.y+=self.speed
 
@@ -92,11 +67,11 @@ class Player:
                 self.move_down()
 
             self.colliding=False
-            for r in Game.allThings:
+            for r in self.game.allThings:
                 if r!=self.rectangle and self.collidingWith(r):
                     self.colliding=True
 
-            for b in enemy.boxes:
+            for b in self.game.enemy.boxes:
                 if self.collidingWith(b.rectangle):
                     self.hit(b)
                     if self.health<=0:
@@ -117,11 +92,11 @@ class Player:
                 self.move_down()
 
             self.colliding=False
-            for r in Game.allThings:
+            for r in self.game.allThings:
                 if r!=self.rectangle and self.collidingWith(r):
                     self.colliding=True
 
-            for b in enemy.boxes:
+            for b in self.game.enemy.boxes:
                 if self.collidingWith(b.rectangle):
                     self.hit(b)
                     if self.health<=0:
@@ -144,7 +119,8 @@ class Player:
 
 class Enemy:
     boxes=[]
-    def __init__(self,x,y,size, image):
+    def __init__(self,x,y,size, image, game):
+        self.game=game
         self.x=x
         self.y=y
         self.size=size
@@ -166,9 +142,9 @@ class Enemy:
         
     
         num=random.randint(1,4)
-        self.boxes.append(Box(num, self.boxes))
+        self.boxes.append(Box(num, self.boxes, self.game))
         num=random.randint(1,4)
-        self.boxes.append(Box(num, self.boxes))
+        self.boxes.append(Box(num, self.boxes, self.game))
         
         
            
@@ -177,14 +153,11 @@ class Enemy:
         screen.blit(self.image, (self.x, self.y))
 
         for b in self.boxes:
-            b.draw(screen)
-
-    
-            
+            b.draw(screen)        
 
 class Box:
-    def __init__(self, direction, boxList):
-        box=Game.player_box
+    def __init__(self, direction, boxList, game):
+        box=game.player_box
         self.boxList=boxList
         self.direction=direction
         if direction==1:
@@ -243,11 +216,64 @@ class Box:
     def draw(self, screen):
         pygame.draw.rect(screen, WHITE, self.rectangle)
 
+class Screen:
+    def draw():
+        pass
+    def update():
+        pass
 
-player1= Player(pygame.Rect(500,500,25,25), "assets/purpleSOUL.png", 4)
-player2= Player(pygame.Rect(500,500,25,25), "assets/yellowSOUL.png", 4)
-enemy = Enemy(WIDTH/2-100,50,200,"assets/EnemyBox4.png")
+class Game(Screen):
+    def __init__(self):
+        self.allThings=[]
+        self.player_box=pygame.Rect(WIDTH/2-350/2, 300, 350, 350)
+        self.player1= Player(pygame.Rect(500,500,25,25), "assets/purpleSOUL.png", 4, self)
+        self.player2= Player(pygame.Rect(500,500,25,25), "assets/yellowSOUL.png", 4, self)
+        self.enemy = Enemy(WIDTH/2-100,50,200,"assets/EnemyBox4.png", self)
 
+    
+
+    def draw_box(self, screen):
+        box=self.player_box
+        point=4
+        pygame.draw.line(screen, WHITE, (box.x, box.y), (box.x+box.width, box.y), point)
+        pygame.draw.line(screen, WHITE, (box.x+box.width, box.y), (box.x+box.width, box.y+box.height), point)
+        pygame.draw.line(screen, WHITE, (box.x+box.width, box.y+box.height), (box.x, box.y+box.height), point)
+        pygame.draw.line(screen, WHITE, (box.x, box.y+box.height), (box.x, box.y), point)
+
+    def draw_health(self, screen, p1, p2):
+        pygame.draw.rect(screen, RED, (20,10,50,20))
+        if not p1.dead:
+            pygame.draw.rect(screen, GREEN, (20,10,p1.health,20))
+
+        pygame.draw.rect(screen, RED, (930,10,50,20))
+        if not p2.dead:
+            pygame.draw.rect(screen, GREEN, (930,10,p2.health,20))
+        
+    def draw(self, screen):
+        self.player1.draw(screen)
+        self.player2.draw(screen)
+        self.enemy.draw(screen)
+    
+        self.draw_box(screen)
+        self.draw_health(screen, self.player1, self.player2)
+
+    def update(self):
+        self.player1.move2()
+        self.player2.move()
+        self.enemy.attack()
+    
+class TryAgain(Screen):
+    def __init__(self):
+        self.player=Player()
+
+    def draw():
+        pass
+    
+    def update():
+        pass
+
+        
+activeScreen = Game()
 n=0
 while running:
     n+=1
@@ -259,23 +285,18 @@ while running:
             running = False
 
     # UPDATE
-    player1.move2()
-    player2.move()
-    enemy.attack()
+    activeScreen.update()
+    
 
-    if player1.dead and player2.dead:
-        a=b
+    
 
     
     # DRAW
     screen.fill(BLACK)
 
-    player1.draw(screen)
-    player2.draw(screen)
-    enemy.draw(screen)
+    activeScreen.draw(screen)
 
-    Game.draw_box(screen)
-    Game.draw_health(screen, player1, player2)
+    
 
     # flip() the display to put your work on screen
     pygame.display.flip()
