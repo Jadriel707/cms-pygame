@@ -16,9 +16,12 @@ GREEN = pygame.Color(0,255,0)
 YELLOW = pygame.Color(255,255,0)
 WHITE = pygame.Color(255,255,255)
 
+font = pygame.font.Font('freesansbold.ttf', 32)
+
 
 class Player:
     def __init__(self, rectangle, image, speed, game):
+        
         self.game=game
         game.allThings.append(rectangle)
         self.rectangle=rectangle
@@ -142,10 +145,11 @@ class Enemy:
         
     
         num=random.randint(1,4)
-        self.boxes.append(Box(num, self.boxes, self.game))
+        speed=random.randint(2,4)*2
+        self.boxes.append(Box(num, self.boxes, speed, self.game))
         num=random.randint(1,4)
-        self.boxes.append(Box(num, self.boxes, self.game))
-        
+        speed=random.randint(2,4)*2
+        self.boxes.append(Box(num, self.boxes, speed, self.game))
         
            
     
@@ -156,7 +160,7 @@ class Enemy:
             b.draw(screen)        
 
 class Box:
-    def __init__(self, direction, boxList, game):
+    def __init__(self, direction, boxList, speed, game,):
         box=game.player_box
         self.boxList=boxList
         self.direction=direction
@@ -174,7 +178,7 @@ class Box:
             self.y=random.randint(box.y, box.y+box.height)
 
         self.damage=5
-        self.speed=4
+        self.speed=speed
 
         self.rectangle=pygame.Rect(self.x, self.y, 50, 50)
 
@@ -224,6 +228,9 @@ class Screen:
 
 class Game(Screen):
     def __init__(self):
+        self.ticks=0
+        self.seconds=0
+        self.minutes=0
         self.allThings=[]
         self.player_box=pygame.Rect(WIDTH/2-350/2, 300, 350, 350)
         self.player1= Player(pygame.Rect(500,500,25,25), "assets/purpleSOUL.png", 4, self)
@@ -261,20 +268,58 @@ class Game(Screen):
         self.player1.move2()
         self.player2.move()
         self.enemy.attack()
+        self.goTime()
+
+    def switch_screens(self):
+        if self.player1.dead and self.player2.dead:
+            return TryAgain(self)
+        else:
+            return self
+        
+    def goTime(self):
+        if not (self.player1.dead and self.player2.dead):
+            self.ticks+=1
+            if self.ticks>=60:
+                self.ticks=0
+                self.seconds+=1
+            if self.seconds>=60:
+                self.seconds=0
+                self.minutes+=1
     
 class TryAgain(Screen):
-    def __init__(self):
-        self.player=Player()
+    def __init__(self, gameScreen1):
+        self.gameScreen=gameScreen1
+        self.text = font.render('Final Time: ', True, WHITE)
+        self.text2 = font.render('Try Again? [PRESS SPACE]', True, WHITE)
 
-    def draw():
-        pass
+    def draw(self, screen):
+        screen.blit(self.text, (200,200))
+        screen.blit(self.text2, (200,400))
     
-    def update():
-        pass
+    def update(self):
+        self.text = font.render('Final Time: '+str(self.gameScreen.minutes)+' Minutes, '+str(self.gameScreen.seconds)+' seconds', True, WHITE)
+    
+    def switch_screens(self):
+        keys_down=pygame.key.get_pressed()
 
+        if keys_down[pygame.K_SPACE]:
+            return Game()
+        else:
+            return self
         
-activeScreen = Game()
-n=0
+    
+        
+
+gameScreen = Game()
+activeScreen = gameScreen
+n=0 
+
+
+
+
+
+
+
 while running:
     n+=1
     print(n)
@@ -286,10 +331,7 @@ while running:
 
     # UPDATE
     activeScreen.update()
-    
-
-    
-
+    activeScreen=activeScreen.switch_screens()
     
     # DRAW
     screen.fill(BLACK)
