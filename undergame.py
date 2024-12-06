@@ -166,16 +166,16 @@ class Box:
         self.direction=direction
         if direction==1:
             self.spawn_top()
-            self.x=random.randint(box.x, box.x+box.width)
+            self.x=random.randint(box.x-50, box.x+box.width)
         elif direction==2:
             self.spawn_right()
-            self.y=random.randint(box.y, box.y+box.height)
+            self.y=random.randint(box.y-50, box.y+box.height)
         elif direction==3:
             self.spawn_bottom()
-            self.x=random.randint(box.x, box.x+box.width)
+            self.x=random.randint(box.x-50, box.x+box.width)
         elif direction==4:
             self.spawn_left()
-            self.y=random.randint(box.y, box.y+box.height)
+            self.y=random.randint(box.y-50, box.y+box.height)
 
         self.damage=5
         self.speed=speed
@@ -251,10 +251,12 @@ class Game(Screen):
         pygame.draw.rect(screen, RED, (20,10,50,20))
         if not p1.dead:
             pygame.draw.rect(screen, GREEN, (20,10,p1.health,20))
+            screen.blit(p1.image, (30, 35))
 
         pygame.draw.rect(screen, RED, (930,10,50,20))
         if not p2.dead:
             pygame.draw.rect(screen, GREEN, (930,10,p2.health,20))
+            screen.blit(p2.image, (940, 35))
         
     def draw(self, screen):
         self.player1.draw(screen)
